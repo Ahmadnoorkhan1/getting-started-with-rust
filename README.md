@@ -13,7 +13,8 @@ This is a simple HTTP server that listens on `localhost:3000` and responds to GE
 
 - [Blocking Downloader](./docs/BLOCKINGDOWNLOADER.md) - How I learned about synchronous functions and file downloads using URLs
 - [Async Downloader](./docs/ASYNCDOWNLOADER.md) - How I learned about async/await and concurrent file downloads using Tokio
-- [Backpressure](./docs/BACKPRESSUR.md) - How i learned about Flow Control in Async Systems using tokio and mpsc
+- [Backpressure](./docs/BACKPRESSUR.md) - How I learned about Flow Control in Async Systems using tokio and mpsc
+- [Load Balancing](./docs/LOADBALANCING.md) How I learned about distributed systems architecture
 
 ## Dependencies (`Cargo.toml`)
 
