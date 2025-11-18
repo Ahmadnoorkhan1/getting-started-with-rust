@@ -12,6 +12,7 @@ This is a simple HTTP server that listens on `localhost:3000` and responds to GE
 ## Learning Resources
 
 - [Blocking Downloader](./docs/BLOCKINGDOWNLOADER.md) - How I learned about synchronous functions and file downloads using URLs
+- [Async Downloader](./docs/ASYNCDOWNLOADER.md) - How I learned about async/await and concurrent file downloads using Tokio
 
 ## Dependencies (`Cargo.toml`)
 
