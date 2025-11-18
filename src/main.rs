@@ -1,5 +1,6 @@
 use std::env;
 use std::net::SocketAddr;
+use std::sync::Arc;
 
 // Import excercise modules
 mod sync_async;
@@ -10,12 +11,21 @@ use sync_async::async_downloader::async_download;
 // Import load balancer modules
 mod client_lb;
 use client_lb::load_balancer::{LoadBalancer, Backend};
-use client_lb::health_check::{ping, update_health, is_healthy};
-use client_lb::retry::retry_async;
+use client_lb::health_check::{ping, update_health};
+
+// Import caching modules
+mod caching;
+use caching::cache_aside::{CacheAside, print_metrics};
+use caching::singleflight::SingleFlight;
+
 
 // Axum + Tokio
 use axum::{routing::get, Router};
 use tokio::net::TcpListener;
+
+// Redis
+use redis::aio::ConnectionManager;
+use anyhow::Result;
 
 #[tokio::main]
 async fn main() {
@@ -68,6 +78,17 @@ async fn main() {
                 return;
             }
 
+            "7" => {
+                println!("Running Cache Aside Example");
+                cache_aside_example().await;
+                return;
+            }
+
+            "8" => {
+                println!("Running Single Flight Example");
+                single_flight_example().await;
+                return;
+            }
             _ => {
                 println!("Invalid argument. Use: ");
                 print_menu();
@@ -140,4 +161,35 @@ async fn load_balancer_example_func(){
     } else {
         println!("Consistent Hashing: No healthy servers!");
     }
+}
+
+async fn cache_aside_example() -> Result<()> {
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let conn = ConnectionManager::new(client).await?;
+    let cache = CacheAside::new(conn, 30);
+    let acct =cache.get_account("42").await?;
+    println!("Account: {:?}", acct);
+    print_metrics();
+    return Ok(());
+
+}
+
+async fn single_flight_example() -> Result<()>{
+    let client = redis::Client::open("redis://127.0.0.1/")?;
+    let conn = ConnectionManager::new(client).await?;
+    let cache = Arc::new(CacheAside::new(conn, 30));
+    let sf = SingleFlight::new(cache);
+    let mut tasks = vec![];
+    for _ in 0..50 {
+        let sf = sf.clone();
+        tasks.push(tokio::spawn(async move{
+            let r = sf.get("42").await;
+            println!("Result: {:?}", r);
+        }));
+    }
+    for t in tasks {
+        t.await?;
+    }
+    print_metrics();
+    return Ok(());
 }
