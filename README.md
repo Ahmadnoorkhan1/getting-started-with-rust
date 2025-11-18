@@ -9,6 +9,10 @@ This is a simple HTTP server that listens on `localhost:3000` and responds to GE
 - **`Cargo.toml`** - Project manifest and dependency configuration
 - **`src/main.rs`** - Main application entry point with HTTP server setup
 
+## Learning Resources
+
+- [Blocking Downloader](./docs/BLOCKINGDOWNLOADER.md) - How I learned about synchronous functions and file downloads using URLs
+
 ## Dependencies (`Cargo.toml`)
 
 ### Tokio (`tokio`)
